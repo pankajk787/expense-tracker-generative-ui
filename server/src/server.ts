@@ -8,6 +8,23 @@ app.use(cors());
 
 app.get("/health", (_req, res) =>{
     return res.json({ status: "Healthy", timeStamp: new Date().toISOString() })
+});
+
+app.get("/chat", (req, res) => {
+    /**
+     * SSE:
+     * 1. Send a special header
+     * 2. Send data in special format
+     */
+    res.writeHead(200, {
+        "Content-Type": "text/event-stream"
+    })
+
+    setInterval(() => {
+        // Sending data in the SSE protocol format
+        res.write("event: ping\n")
+        res.write('data: Happy coding\n\n')
+    }, 1000);
 })
 
 const PORT = process.env.PORT || 5001;
