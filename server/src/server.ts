@@ -22,9 +22,9 @@ app.get("/chat", (req, res) => {
 
     setInterval(() => {
         // Sending data in the SSE protocol format
-        res.write("event: ping\n")
+        res.write("event: ping\n") // Custom event
         res.write('data: Happy coding\n\n')
-    }, 1000);
+    }, 2000);
 })
 
 const PORT = process.env.PORT || 5001;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';
 
@@ -50,18 +50,23 @@ const ChatContainer = () => {
 
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
+  }
 
-    // Simulate API call
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'I received your message: ' + content,
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-      setIsLoading(false);
-    }, 1000);
-  };
+    useEffect(()=>{
+      const eventSrc = new EventSource("http://localhost:5001/chat");
+      eventSrc.addEventListener("open", () => {
+        console.log("Event Opened");
+      });
+
+      // eventSrc.addEventListener("message", (data) => {
+      //   console.log("[message event]: Recieved message", data)
+      // })
+
+      eventSrc.addEventListener("ping", (message) => {
+        console.log("[Custom ping event]: Recieved message", message)
+        // setMessages((prev) => ([...prev, { id: String(new Date().getTime()), content: message.data, role: "assistant" }]))
+      })
+    }, []);
 
   return (
     <div className="flex flex-col h-screen bg-gray-950">
