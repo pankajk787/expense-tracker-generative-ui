@@ -10,12 +10,13 @@ app.get("/health", (_req, res) =>{
     return res.json({ status: "Healthy", timeStamp: new Date().toISOString() })
 });
 
-app.get("/chat", (req, res) => {
+app.post("/chat", (req, res) => {
     /**
      * SSE:
      * 1. Send a special header
      * 2. Send data in special format
      */
+    const body = req.body;
     res.writeHead(200, {
         "Content-Type": "text/event-stream"
     })
@@ -23,7 +24,7 @@ app.get("/chat", (req, res) => {
     setInterval(() => {
         // Sending data in the SSE protocol format
         res.write("event: ping\n") // Custom event
-        res.write('data: Happy coding\n\n')
+        res.write(`data: ${body?.query}\n\n`)
     }, 2000);
 })
 

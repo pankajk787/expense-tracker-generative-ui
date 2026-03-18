@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 interface Message {
   id: string;
@@ -53,19 +54,32 @@ const ChatContainer = () => {
   }
 
     useEffect(()=>{
-      const eventSrc = new EventSource("http://localhost:5001/chat");
-      eventSrc.addEventListener("open", () => {
-        console.log("Event Opened");
-      });
+      const submitQuery = async () => {
+        await fetchEventSource('http://localhost:5001/chat', {
+          method: "POSt",
+          body: JSON.stringify({ query: "Helloo"}),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          onmessage(ev) {
+              console.log(ev.data);
+          }
+        });
+      }
+      submitQuery();
+      // const eventSrc = new EventSource("http://localhost:5001/chat");
+      // eventSrc.addEventListener("open", () => {
+      //   console.log("Event Opened");
+      // });
 
-      // eventSrc.addEventListener("message", (data) => {
-      //   console.log("[message event]: Recieved message", data)
+      // // eventSrc.addEventListener("message", (data) => {
+      // //   console.log("[message event]: Recieved message", data)
+      // // })
+
+      // eventSrc.addEventListener("ping", (message) => {
+      //   console.log("[Custom ping event]: Recieved message", message)
+      //   // setMessages((prev) => ([...prev, { id: String(new Date().getTime()), content: message.data, role: "assistant" }]))
       // })
-
-      eventSrc.addEventListener("ping", (message) => {
-        console.log("[Custom ping event]: Recieved message", message)
-        // setMessages((prev) => ([...prev, { id: String(new Date().getTime()), content: message.data, role: "assistant" }]))
-      })
     }, []);
 
   return (
