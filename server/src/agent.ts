@@ -82,20 +82,20 @@ const graph = new StateGraph(MessagesAnnotation)
         "__end__": "__end__"
     });
 
-    const agent = graph.compile({ checkpointer: new MemorySaver() });
+    export const agent = graph.compile({ checkpointer: new MemorySaver() });
 
-    async function main() {
-        const response = await agent.invoke({
-            messages: [
-                {
-                    role: "user",
-                    content: "Visualize my expenses this year group by date"
-                    // content: "Bought a Carrier AC worth 30000 on Jan 20 this year"
-                }
-            ]
-        }, { configurable: { thread_id: "1" }});
+    // async function main() {
+    //     const response = await agent.invoke({
+    //         messages: [
+    //             {
+    //                 role: "user",
+    //                 content: "Visualize my expenses this year group by date"
+    //                 // content: "Bought a Carrier AC worth 30000 on Jan 20 this year"
+    //             }
+    //         ]
+    //     }, { configurable: { thread_id: "1" }});
 
-        console.log("Response: ", response)
-    }
+    //     console.log("Response: ", response)
+    // }
 
-    main()
+    // main()

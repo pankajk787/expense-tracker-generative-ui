@@ -29,7 +29,7 @@ const ChatInput = ({ onSendMessage, isLoading = false }: ChatInputProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-gray-950 border-t border-gray-800">
+    <form onSubmit={handleSubmit} className="p-4">
       <div className="flex bg-gray-900 border border-gray-700 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-purple-500">
         <textarea
           value={input}

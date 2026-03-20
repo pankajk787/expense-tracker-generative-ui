@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import { agent } from "./agent.ts";
+import type { StreamMessage } from "./types.js";
 
 const app = express();
 
@@ -10,7 +12,7 @@ app.get("/health", (_req, res) =>{
     return res.json({ status: "Healthy", timeStamp: new Date().toISOString() })
 });
 
-app.post("/chat", (req, res) => {
+app.post("/chat", async (req, res) => {
     /**
      * SSE:
      * 1. Send a special header
@@ -21,11 +23,37 @@ app.post("/chat", (req, res) => {
         "Content-Type": "text/event-stream"
     })
 
-    setInterval(() => {
-        // Sending data in the SSE protocol format
-        res.write("event: ping\n") // Custom event
-        res.write(`data: ${body?.query}\n\n`)
-    }, 2000);
+    const response = await agent.stream({
+        messages: [
+            {
+                role: "user",
+                content: body?.query
+                // content: "Bought a Carrier AC worth 30000 on Jan 20 this year"
+            }
+        ]
+    }, {
+        streamMode: ["messages"],
+        configurable: { thread_id: "1" } // Todo:  dynamically thread_id - chat id
+    });
+
+    for await (const [eventType, chunk] of response) {
+        const messageType = chunk[0].type;
+
+        let message: StreamMessage = {} as StreamMessage;
+        if(messageType === "ai") {
+           message = { type: "ai", payload: { text: chunk[0].content as string } };
+        }
+        res.write(`event: ${eventType}\n`);
+        res.write(`data: ${JSON.stringify(message)}\n\n`)
+    }
+
+    res.end();
+
+    // setInterval(() => {
+    //     // Sending data in the SSE protocol format
+    //     res.write("event: ping\n") // Custom event
+    //     res.write(`data: ${body?.query}\n\n`)
+    // }, 2000);
 })
 
 const PORT = process.env.PORT || 5001;
