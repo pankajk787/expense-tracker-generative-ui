@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Message } from "../main.types";
+import { ExpenseChart } from "./ExpenseChart";
 
 
 const ChatMessage = ({ message }: { message: Message}) => {
@@ -53,8 +54,10 @@ const ChatMessage = ({ message }: { message: Message}) => {
         </div>
         {
           message.payload.name === "generate_expense_chart" && 
-          <div>
-            Generate Chart Result
+          <div className="p-4 border-gray-800 border rounded-lg bg-gray-900/40">
+            <ExpenseChart 
+              chartData={message.payload.result.data } 
+              labelKey={message.payload.result.labelKey} />
           </div>
         }
       </div>
