@@ -32,16 +32,23 @@ app.post("/chat", async (req, res) => {
             }
         ]
     }, {
-        streamMode: ["messages"],
+        streamMode: ["messages", "custom"],
         configurable: { thread_id: "1" } // Todo:  dynamically thread_id - chat id
     });
 
     for await (const [eventType, chunk] of response) {
-        const messageType = chunk[0].type;
-
+        
         let message: StreamMessage = {} as StreamMessage;
-        if(messageType === "ai") {
-           message = { type: "ai", payload: { text: chunk[0].content as string } };
+        if(eventType === "custom") {
+            message = chunk;
+        } else if(eventType === "messages") {
+            if(chunk[0].content === "") continue;
+            const messageType = chunk[0].type;
+            if(messageType === "ai") {
+                message = { type: "ai", payload: { text: chunk[0].content as string } };
+            } else if(messageType === "tool") {
+                message = { type: "tool", payload: { name: chunk[0].name!, result: JSON.parse(chunk[0].content as string )} }
+            }
         }
         res.write(`event: ${eventType}\n`);
         res.write(`data: ${JSON.stringify(message)}\n\n`)

@@ -71,7 +71,6 @@ const ChatContainer = () => {
         onmessage(ev) {
           // console.log(ev.data);
           const response = JSON.parse(ev.data) as StreamMessage;
-          console.log("Response::::", response);
           if (response.type === "ai") {
             setMessages((prev) => {
               const lastMessage = prev[prev.length - 1];
@@ -85,6 +84,7 @@ const ChatContainer = () => {
                 };
                 return clonedMessages;
               } else {
+                // setIsLoading(true);
                 return [
                   ...prev,
                   {
@@ -93,7 +93,33 @@ const ChatContainer = () => {
                     payload: response.payload,
                   },
                 ];
+                // setIsLoading(false);
               }
+            });
+          } else if( response.type === "toolCall:start") {
+            console.log("TOOL CALL START")
+            setIsLoading(true);
+            setMessages((prev) => {
+              return [
+                ...prev,
+                {
+                  id: new Date().getTime().toString(),
+                  type: "toolCall:start",
+                  payload: response.payload
+                }
+              ]
+            });
+            setIsLoading(false);
+          } else if(response.type === "tool") {
+            setMessages((prev) => {
+              return [
+                ...prev,
+                {
+                  id: new Date().getTime().toString(),
+                  type: "tool",
+                  payload: response.payload
+                }
+              ]
             });
           }
         },
