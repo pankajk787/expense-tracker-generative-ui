@@ -15,7 +15,7 @@ interface ChartElement {
 
 export function ExpenseChart({ chartData, labelKey } : { chartData : ChartElement[], labelKey: string }) {
   return (
-    <ChartContainer config={chartConfig} className="min-h-50 w-full">
+    <ChartContainer config={chartConfig} className="w-full h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px]">
       <BarChart accessibilityLayer data={chartData}>
         <CartesianGrid vertical={false} />
         <ChartTooltip content={<ChartTooltipContent />} cursor={true} contentStyle={{backgroundColor: "#000"}}/>

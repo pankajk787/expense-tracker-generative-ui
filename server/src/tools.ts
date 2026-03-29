@@ -3,7 +3,7 @@ import type { DatabaseSync } from "node:sqlite";
 import * as z from "zod";
 
 
-export function initTools(database: DatabaseSync ) {
+export function initTools(database: DatabaseSync, userId: number) {
     /**
      * Add Expense Tool
      */
@@ -22,10 +22,10 @@ export function initTools(database: DatabaseSync ) {
         const dtString = date.split("T")[0];
         try{
             const stmt = database.prepare(`
-                    INSERT INTO expenses (title, amount, date) VALUES (?, ?, ?)
+                    INSERT INTO expenses (title, amount, date, user_id) VALUES (?, ?, ?, ?)
                 `);
                 
-            stmt.run(title, amount, dtString);
+            stmt.run(title, amount, dtString, userId);
     
             return JSON.stringify({ status: "success" })
         } catch(e) {
@@ -50,9 +50,9 @@ export function initTools(database: DatabaseSync ) {
 
         try{
             const stmt = database.prepare(`
-                    SELECT * from expenses WHERE date between ? AND ?
+                    SELECT * from expenses WHERE user_id = ? AND date between ? AND ?
                 `);
-            const rows = stmt.all(from, to);
+            const rows = stmt.all(userId, from, to);
             
             return JSON.stringify(rows);
         } catch(e) {
@@ -93,12 +93,12 @@ export function initTools(database: DatabaseSync ) {
         try{
             const query = `
             SELECT ${groupBySql} as period, SUM(amount) as total FROM expenses
-            WHERE date BETWEEN ? AND ?
+            WHERE user_id = ? AND date BETWEEN ? AND ?
             GROUP BY period
             ORDER BY period
             `
             const stmt = database.prepare(query);
-            const rows = stmt.all(from, to);
+            const rows = stmt.all(userId, from, to);
 
             console.log("Rows: ", rows);
             const result = rows.map((item) => ({ [groupBy] : item.period, amount: item.total }))
