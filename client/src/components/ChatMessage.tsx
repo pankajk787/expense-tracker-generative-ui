@@ -1,6 +1,9 @@
 import { useState } from "react";
 import type { Message } from "../main.types";
 import { ExpenseChart } from "./ExpenseChart";
+import { BudgetStatus } from "./BudgetStatus";
+import { PieChart } from "./PieChart";
+import { LineChart } from "./LineChart";
 
 
 const ChatMessage = ({ message }: { message: Message}) => {
@@ -72,6 +75,64 @@ const ChatMessage = ({ message }: { message: Message}) => {
                       
                       return `No ${groupBy} expense data found between ${from} and ${to}`;
                     })()}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        }
+        {
+          message.payload.name === "get_budget_status" && 
+          <div className="mt-4 w-full overflow-x-auto">
+            <div className="min-w-full border-slate-700 border rounded-lg bg-slate-800/40">
+              {message.payload.result.data && message.payload.result.data.length > 0 ? (
+                <BudgetStatus data={message.payload.result.data} period={message.payload.result.period} />
+              ) : (
+                <div className="flex items-center justify-center py-12 px-4">
+                  <p className="text-slate-400 text-center">
+                    No budgets set yet. Use the chat to set a budget for a category.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        }
+        {
+          message.payload.name === "get_spending_insights" && 
+          <div className="mt-4 w-full overflow-x-auto">
+            <div className="min-w-full p-4 border-slate-700 border rounded-lg bg-slate-800/40">
+              {message.payload.result.data && message.payload.result.data.length > 0 ? (
+                <>
+                  <h3 className="text-sm font-semibold text-slate-200 mb-4">
+                    {message.payload.result.metric === "highest-spending" && "Top Spending Categories"}
+                    {message.payload.result.metric === "category-breakdown" && "Spending Breakdown by Category"}
+                    {message.payload.result.metric === "trends" && "Weekly Spending Trends"}
+                  </h3>
+                  {message.payload.result.metric === "category-breakdown" ? (
+                    <PieChart data={message.payload.result.data} />
+                  ) : message.payload.result.metric === "trends" ? (
+                    <LineChart data={message.payload.result.data} metric={message.payload.result.metric} />
+                  ) : (
+                    <div className="space-y-2">
+                      {message.payload.result.data.map((item: any, idx: number) => (
+                        <div key={idx} className="flex justify-between items-center p-3 bg-slate-700/50 rounded">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-3 h-3 rounded"
+                              style={{ backgroundColor: item.color || "#6b7280" }}
+                            />
+                            <span className="text-sm font-medium text-white">{item.category}</span>
+                          </div>
+                          <span className="text-sm font-semibold text-gray-200">₹{item.total_spent?.toFixed(2) || "0.00"}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="flex items-center justify-center py-12 px-4">
+                  <p className="text-slate-400 text-center">
+                    No spending data available for the selected period.
                   </p>
                 </div>
               )}

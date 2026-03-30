@@ -49,6 +49,24 @@ const CARD_CONFIGS: CardConfig[] = [
     suggestion: "Visualize my expenses for this year",
     route: "/examples",
   },
+  {
+    emoji: "💰",
+    title: "Set a budget",
+    description: "Create spending limits",
+    suggestion: "Set a ₹500 budget for groceries",
+  },
+  {
+    emoji: "📊",
+    title: "Budget status",
+    description: "Check your spending",
+    suggestion: "Show me my budget status",
+  },
+  {
+    emoji: "📈",
+    title: "Spending insights",
+    description: "Analyze patterns",
+    suggestion: "Analyze my spending trends",
+  },
 ];
 
 const ChatContainer = () => {

@@ -27,8 +27,8 @@ export default function ExamplesPage() {
           ai: "Added: Laptop - ₹50,000 on today's date",
         },
         {
-          user: "Spent $45 on groceries yesterday",
-          ai: "Added: Groceries - $45 on yesterday",
+          user: "Spent ₹45 on groceries yesterday",
+          ai: "Added: Groceries - ₹45 on yesterday",
         },
         {
           user: "Had dinner at Pizza Hut, cost me 800 rupees on 15th March",
@@ -212,7 +212,7 @@ export default function ExamplesPage() {
             {[
               {
                 title: "Amounts",
-                examples: "₹500, $100, 1000 rupees, 50 dollars",
+                examples: "₹500, ₹100, 1000 rupees, 50 dollars",
               },
               {
                 title: "Dates",

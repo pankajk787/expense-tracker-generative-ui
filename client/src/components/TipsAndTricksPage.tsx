@@ -23,7 +23,7 @@ export default function TipsAndTricksPage() {
       title: "Use Natural Language",
       category: "Input Tips",
       tips: [
-        "Say 'Bought groceries for $45 yesterday'",
+        "Say 'Bought groceries for ₹45 yesterday'",
         "Try 'Spent 500 rupees on fuel today'",
         "Use 'Had dinner at restaurant, cost me 1200'",
         "Be conversational - the AI understands context",
@@ -56,8 +56,8 @@ export default function TipsAndTricksPage() {
       title: "Save Time",
       category: "Efficiency Tips",
       tips: [
-        "Group similar expenses: 'food-$100, transport-$50, entertainment-$30'",
-        "Use quick phrases like 'lunch-$12', 'coffee-$5'",
+        "Group similar expenses: 'food-$100, transport-₹50, entertainment-₹30'",
+        "Use quick phrases like 'lunch-₹12', 'coffee-₹5'",
         "Ask 'what are my top expenses?' to find areas to cut",
         "Request 'weekly summary' for regular check-ins",
       ],
@@ -144,7 +144,7 @@ export default function TipsAndTricksPage() {
               "❌ Forgetting to include amounts in your description",
               "❌ Using unclear category names",
               "❌ Not specifying dates for past expenses",
-              "❌ Being too vague - 'spent money' instead of 'bought coffee for $5'",
+              "❌ Being too vague - 'spent money' instead of 'bought coffee for ₹5'",
               "❌ Not reviewing your monthly summaries regularly",
             ].map((mistake, index) => (
               <motion.div

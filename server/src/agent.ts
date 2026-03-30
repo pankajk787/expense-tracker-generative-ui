@@ -7,9 +7,9 @@ import type { AIMessage, ToolMessage } from "langchain";
 import type { StreamMessage } from "./types.js";
 
 /**
- * Initalize DB
+ * Initalize DB - Use same database as server.ts
  */
-const database = initDB("./expenses.db");
+const database = initDB("expense_tracker.db");
 
 /**
  * Initialize LLM
@@ -39,9 +39,42 @@ export function createUserAgent(userId: number) {
             {
                 role: "system",
                 content: `You are a helpful expense tracking assistant. Current datetime: ${new Date().toISOString()}.
-                Call add_expense tool to add expense into database.
-                Call get_expenses tool to get the expenses for a given date range.
-                Call generate_expense_chart tool only when user needs to visualize expenses.
+                
+TOOLS AVAILABLE:
+1. add_expense: Add a new expense with OPTIONAL category
+   - ALWAYS infer and assign the best category when adding expenses
+   - Examples: iPhone/Electronics → "Shopping" | Grocery/Food → "Groceries" | Restaurant/Lunch → "Dining" | Gas/Uber → "Transportation" | Movie/Book → "Entertainment" | Doctor/Medicine → "Healthcare" | Electricity/Internet → "Utilities" | Unclear → "Other"
+   
+2. get_expenses: Retrieve expenses for a date range
+
+3. generate_expense_chart: Visualize expenses by month, week, or date
+
+4. set_budget: Set a MONTHLY budget for a category. Budgets automatically reset at the start of each month.
+
+5. get_budget_status: Show current month's budget vs spent for categories.
+
+6. get_spending_insights: Analyze spending patterns with options: "highest-spending", "category-breakdown", "trends"
+
+BUDGET BEHAVIOR (IMPORTANT):
+- Budgets are MONTHLY and reset automatically on the 1st of each month
+- Only current month expenses count toward budget calculations
+- Each month starts fresh at 0% budget usage
+
+CATEGORY MAPPING (when adding expenses):
+- "iPhone", "Laptop", "Phone", "Electronics", "Gadgets" → Shopping
+- "Grocery", "Food", "Milk", "Bread", "Vegetables", "Shopping" → Groceries  
+- "Restaurant", "Lunch", "Dinner", "Café", "Coffee", "Pizza", "Burger" → Dining
+- "Gas", "Bus", "Uber", "Taxi", "Train", "Fuel", "Parking" → Transportation
+- "Electricity", "Water", "Internet", "Phone Bill", "Gas Bill" → Utilities
+- "Movie", "Concert", "Game", "Book", "Theater" → Entertainment
+- "Doctor", "Medicine", "Hospital", "Pharmacy", "Health" → Healthcare
+- Unclear/Other → Other
+
+EXAMPLES:
+- User: "I bought an iPhone for 75k" → Call add_expense(title="iPhone", amount=75000, category="Shopping")
+- User: "Set $500 budget for groceries" → Call set_budget(category="Groceries", amount=500)
+- User: "Show budget status" → Call get_budget_status()
+- User: "Analyze my spending" → Call get_spending_insights(from="2026-03-01", to="2026-03-31", metric="category-breakdown")
                 `
             },
             ...state.messages
@@ -73,7 +106,9 @@ export function createUserAgent(userId: number) {
         const lastMessage = state.messages[state.messages.length - 1] as ToolMessage;
 
         const message = JSON.parse(lastMessage.content as string);
-        if(message.type === "chart") {
+        // Terminal response types that should end the chain
+        const terminalTypes = ["chart", "budget-status", "insights"];
+        if(terminalTypes.includes(message.type)) {
             return "__end__"
         }
         return "callModel"
