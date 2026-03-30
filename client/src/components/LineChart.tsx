@@ -59,7 +59,7 @@ export function LineChart({ data, metric }: { data: LineChartItem[], metric?: st
         <YAxis
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `$${value}`}
+          tickFormatter={(value) => `₹${value}`}
         />
         <Line
           type="monotone"
